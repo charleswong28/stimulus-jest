@@ -148,11 +148,18 @@ import { mountDOM, cleanupDOM } from 'rails-jest';
 const startStimulus = () => {
   const application = Application.start();
   application.register('selectable-table', SelectableTableController);
-
-  mountDOM('/admin/staffs/table');
 };
 
 describe('admin/staff', () => {
+  beforeEach(() => {
+     startStimulus();
+     mountDom('/admin/staffs/table');
+  });
+
+  afterEach(() => {
+    cleanupDOM();
+  });
+
   it('should render enabled staff', async () => {
     const row = screen.getByClass('enable');
 
