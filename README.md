@@ -122,7 +122,7 @@ The partial `_staff.html.slim`
   td = staff.employment_date
 ```
 
-The view helper `selectable.rb`
+The view helper `selectable_table.rb`
 ```ruby
 def selectable_table(id = 'table', &block)
   content_tag :table, id:, data: { controller: 'selectable-table' } do
