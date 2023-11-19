@@ -1,10 +1,38 @@
-<h2 align="center">🃏 View and JavaScript Testing on Rails</h2>
+<h2 align="center">Integration testing suit for Rails Stimulus and View Partials</h2>
 
-**👩🏻‍💻 Developer Ready**: A comprehensive JavaScript testing solution using JEST. Works out of the box for stimulus project
+**👩🏻‍💻 Developer Ready**: A comprehensive integration testing suite designed for Rails Stimulus and view partials, utilizing JEST and a static HTML generator.
 
-**📸 Blazing fast**: Unlike e2e testing, html is captured from your views and partials.
+**📸 Scalable testing**: This suite focuses on testing JavaScript and views without creating database records, providing a scalable solution.
 
-**🏃🏽 Instant Feedback**: Only building html files related to changed files.
+**🏃🏽 Instant Feedback**: Easily compare changes and build/test only modified files for efficient development.
+
+## The Problem
+
+Consider the typical test case below, which offers limited value as the innerHTML is hardcoded and not based on the actual server-side HTML. When the view changes on the server side, the test case may not fail.
+```javascript
+it('should render enabled staff', async () => {
+  const div = document.createElement('div');
+  div.innerHTML = '<button class="selectable">Select Me</button>';
+  document.body.appendChild(div);
+
+  const button = screen.getByClass('selectable');
+
+  expect(button).toBeInTheDocument();
+  await fireEvent.click(button);
+  expect(button.getAttribute('class')).toContain('selected');
+});
+```
+
+## The solution
+
+```ruby
+RailsJest.scope '/example' do
+  @button_text = 'Select Me'
+  render partial: 'example/button'
+end
+```
+
+A static HTML file, example.html, is generated. The JEST test case is then executed against this generated HTML. If the view changes, the static HTML is regenerated for the corresponding test case.
 
 ## Getting Started
 
@@ -42,11 +70,11 @@ end
 ```
 
 ## Example
-Let's get started by writing a snapshot generators `spec/support/generators/staff.generator.rb`
+Let's get started by creating a snapshot generators `spec/support/generators/staff.generator.rb`
 
 ```ruby
 RailsJest.scope '/admin/staffs' do
-  @staffs = FactoryBot.create_list(:staff, 5, :with_employment_date)
+  @staffs = FactoryBot.build_list(:staff, 5, :with_employment_date)
 
   RailsJest.define '/admin/staffs/table' do
     render partial: 'admin/staffs/table'
@@ -56,6 +84,7 @@ RailsJest.scope '/admin/staffs' do
     staffs.first.status = :disable
 
     respond_to do |format|
+      format.html { redirect_to admin_staff_path }
       format.turbo_stream do
         render turbo_stream: turbo_stream.replace_all('staff_table', partial: 'admin/staff/table')
       end
@@ -64,11 +93,12 @@ RailsJest.scope '/admin/staffs' do
 end
 ```
 
-This will generate 2 html files.
-1. `spec/fixture/snapshots/%2Fadmin%2Fstaffs`
-2. `spec/fixture/snapshots/%2Fadmin%2Fstaffs%2F[0-9]*%2Ftoggle`
+This will generate 3 html files.
+1. `spec/fixture/snapshots/admin/staffs/table`
+2. `spec/fixture/snapshots/admin/staffs/[0-9]*/toggle.html`
+3. `spec/fixture/snapshots/admin/staffs/[0-9]*/toggle.turbo_stream`
 
-When we do js-dom testing,
+When performing JS-DOM testing:
 
 ```javascript
 describe('admin / staff', () => {
@@ -78,7 +108,7 @@ describe('admin / staff', () => {
 ...
 ```
 
-it will load the html file `spec/fixture/snapshots/%2Fadmin%2Fstaffs` and put it in jest js-dom.
+It loads the HTML file spec/fixture/snapshots/admin/staffs/table for the JS-DOM testing.
 
 
 ## Working with turbo stream
@@ -99,11 +129,11 @@ export default class extends Controller {
 }
 ```
 
-get('/admin/staffs/1/toggle') will return the html file of '/admin/staffs/[0-9]*/toggle'.
+get('/admin/staffs/1/toggle') will return the html file of '/admin/staffs/[0-9]*/toggle.turbo_stream'.
 
 ## Full example
 
-The view that generates a selectable table. First, create the partial `_table.html.slim`:
+Consider the view that generates a selectable table. First, create the partial _table.html.slim:
 
 ```slim
 = selectable_table('staff_table') do
