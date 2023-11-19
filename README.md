@@ -1,6 +1,6 @@
 <h2 align="center">Integration testing suit for Rails Stimulus and View Partials</h2>
 
-**👩🏻‍💻 Developer Ready**: A comprehensive integration testing suite designed for Rails Stimulus and view partials, utilizing JEST and a static HTML generator.
+**👩🏻‍💻 Developer Ready**: A comprehensive integration testing suite utilizing JEST and a static HTML generator.
 
 **📸 Scalable testing**: This suite focuses on testing JavaScript and views without creating database records, providing a scalable solution.
 
