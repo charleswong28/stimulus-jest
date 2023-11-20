@@ -26,7 +26,7 @@ it('should render enabled staff', async () => {
 ## The solution
 
 ```ruby
-RailsJest.scope '/example' do
+StimulusJest.scope '/example' do
   @button_text = 'Select Me'
   render partial: 'example/button'
 end
@@ -58,7 +58,7 @@ npm install --save-dev jest
 
 ## Setup
 ```ruby
-RailsJest.configure do |config|
+StimulusJest.configure do |config|
   # Path to store the ruby file to generate snapshot
   # default: 'spec/support/generators'
   config.factory_path = 'spec/support/generators'
@@ -73,14 +73,14 @@ end
 Let's get started by creating a snapshot generators `spec/support/generators/staff.generator.rb`
 
 ```ruby
-RailsJest.scope '/admin/staffs' do
+StimulusJest.scope '/admin/staffs' do
   @staffs = FactoryBot.build_list(:staff, 5, :with_employment_date)
 
-  RailsJest.define '/admin/staffs/table' do
+  StimulusJest.define '/admin/staffs/table' do
     render partial: 'admin/staffs/table'
   end
 
-  RailsJest.define '/admin/staffs/[0-9]*/toggle' do
+  StimulusJest.define '/admin/staffs/[0-9]*/toggle' do
     staffs.first.status = :disable
 
     respond_to do |format|
