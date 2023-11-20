@@ -38,10 +38,10 @@ A static HTML file, example.html, is generated. The JEST test case is then execu
 
 <!-- copied from Getting Started docs, links updated to point to Jest website -->
 
-Install rails-jest using [`gem`](https://github.com/rubygems/rubygems):
+Install stimulus-jest using [`gem`](https://github.com/rubygems/rubygems):
 
 ```bash
-gem install --dev rails-jest
+gem install --dev stimulus-jest
 ```
 
 Install Jest using [`yarn`](https://yarnpkg.com/en/package/jest):
@@ -102,8 +102,10 @@ When performing JS-DOM testing:
 
 ```javascript
 describe('admin / staff', () => {
-  beforeEach(() => {
-     mountDom('/admin/staffs/table');
+  testDom(['/admin/staffs/table'], () => {
+    it('xxx', () => {
+      ...
+    });
   });
 ...
 ```
@@ -173,7 +175,7 @@ Then, create a file named `selectable-table.spec.js`. This will contain our actu
 import { screen, fireEvent, waitFor } from '@testing-library/dom';
 import { Application } from '@hotwired/stimulus';
 import SelectableTableController from 'controllers/selectable_table_controller';
-import { mountDOM, cleanupDOM } from 'rails-jest';
+import { testDom } from 'stimulus-jest';
 
 const startStimulus = () => {
   const application = Application.start();
@@ -183,25 +185,22 @@ const startStimulus = () => {
 describe('admin/staff', () => {
   beforeEach(() => {
      startStimulus();
-     mountDom('/admin/staffs/table');
   });
 
-  afterEach(() => {
-    cleanupDOM();
-  });
-
-  it('should render enabled staff', async () => {
-    const row = screen.getByClass('enable');
-
-    expect(row).toBeInTheDocument();
-    await fireEvent.click(a1);
-    expect(a1.getAttribute('class')).toContain('selected');
-  });
-
-  it('should be able to toggle staff', async () => {
-    const row = screen.findFirstByTagName('tr');
-    await row.click(a1);
-    expect(row.getAttribute('class').toContain('disabled');
+  testDom(['/admin/staffs/table'], () => {
+    it('should render enabled staff', async () => {
+      const row = screen.getByClass('enable');
+  
+      expect(row).toBeInTheDocument();
+      await fireEvent.click(a1);
+      expect(a1.getAttribute('class')).toContain('selected');
+    });
+  
+    it('should be able to toggle staff', async () => {
+      const row = screen.findFirstByTagName('tr');
+      await row.click(a1);
+      expect(row.getAttribute('class').toContain('disabled');
+    });
   });
 });
 ```
