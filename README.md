@@ -26,9 +26,11 @@ it('should render enabled staff', async () => {
 ## The solution
 
 ```ruby
-StimulusJest.scope '/example' do
-  @button_text = 'Select Me'
-  render partial: 'example/button'
+StimulusJest.scope do
+  StimulusJest.define '/example/button' do
+    @button_text = 'Select Me'
+    render partial: 'example/button'
+  end
 end
 ```
 
@@ -73,7 +75,7 @@ end
 Let's get started by creating a snapshot generators `spec/support/generators/staff.generator.rb`
 
 ```ruby
-StimulusJest.scope '/admin/staffs' do
+StimulusJest.scope do
   @staffs = FactoryBot.build_list(:staff, 5, :with_employment_date)
 
   StimulusJest.define '/admin/staffs/table' do
